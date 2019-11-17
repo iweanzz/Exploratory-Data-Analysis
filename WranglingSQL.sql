@@ -7,34 +7,26 @@ Creates the table for the VLE Features table
 	q3_sum_clicks - this is the number clicks during the third quarter of the class defines as the first 121 - 180 days
 	q4_sum_clicks - this is the number clicks during the fourth quarter of the class defines as anything between day 181 and the end of class 
 *********** SQL DOCUMENTATION ***** */
-CREATE TABLE public."studentVleFeatures"
+CREATE TABLE public."vleClickFeatures"
   AS (
 select id_student, code_module, code_presentation,
+sum(sum_click) as sum_clicks,
 sum(CASE
     		WHEN date_iact < 0 THEN sum_click
     		ELSE 0
-		END) as b4_sum_clicks,	
+		END) as b4_clicks,
 sum(CASE
-    		WHEN date_iact between 0 and 60 THEN sum_click
+    		WHEN date_iact between 0 and 128 THEN sum_click
     		ELSE 0
-		END) as q1_sum_clicks,
+		END) as first_half_clicks,
 sum(CASE
-    		WHEN date_iact between 61 and 120 THEN sum_click
+    		WHEN date_iact > 128 THEN sum_click
     		ELSE 0
-		END) as q2_sum_clicks,
-sum(CASE
-    		WHEN date_iact between 121 and 180 THEN sum_click
-    		ELSE 0
-		END) as q3_sum_clicks,
-sum(CASE
-    		WHEN date_iact > 180 THEN sum_click
-    		ELSE 0
-		END) as q4_sum_clicks	
+		END) as second_half_clicks
 from public."studentVleFULLSTG" as vle
 group by id_student, code_module, code_presentation
 order by id_student, code_module, code_presentation
 );
-
 
 /********* SQL DOCUMENTATION *****
 
